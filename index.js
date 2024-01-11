@@ -1,9 +1,10 @@
+require("dotenv/config")
 const qdrant = require("@qdrant/js-client-rest")
 const cohere = require("@langchain/cohere")
 const collection_name = "example";
 
 const embed = new cohere.CohereEmbeddings({
-    apiKey: "grA5kXUCn3WMrZrEjYO35KoKlTCzCPnwOXGRxxEG"
+    apiKey: process.env.COHERE_API_KEY
 })
 const client = new qdrant.QdrantClient({
     url: "http://localhost:6333",
@@ -220,5 +221,5 @@ const data = [
 
 // create_collection(data).then()
 // client.scroll(collection_name).then(({ points }) => console.log(points))
-search('dibujar').then(data => console.log(data))
+// search('dibujar').then(data => console.log(data))
 // recommend(1).then(data => console.log(data))
