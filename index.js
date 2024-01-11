@@ -1,10 +1,12 @@
 require("dotenv/config")
 const qdrant = require("@qdrant/js-client-rest")
-const cohere = require("@langchain/cohere")
+const cohere = require("@langchain/cohere");
 const collection_name = "example";
 
+const { getEnvironmentVariable } = require("@langchain/core/utils/env");
+
 const embed = new cohere.CohereEmbeddings({
-    apiKey: process.env.COHERE_API_KEY
+    apiKey: getEnvironmentVariable("COHERE_API_KEY")
 })
 const client = new qdrant.QdrantClient({
     url: "http://localhost:6333",
@@ -27,17 +29,11 @@ const build_documents = (batches) => {
     })
 }
 
-const sleep = (ms) => {
-    console.log('Sleeping')
-    return new Promise((resolve) => setTimeout(resolve, ms))
-}
-
 const build_points = (batches) => {
     const documents = build_documents(batches)
     const points = []
     
     for (const doc of documents) {
-        // await sleep(2000)
         points.push({
             id: doc.metadata.id,
             vector: doc.metadata.vector,
@@ -107,36 +103,17 @@ const search = async (query) => {
             name: 'text',
             vector: {'indices': [1023837959, 3867408905, 1581001053, 1568472017, 659326392], 'values': [0.16598806579159123, 0.14151152988199817, 0.32824587919109305, 0.2846760094255305, 0.07957851570978698]} 
         },
-        // consistency: 'all',
-        with_payload: true,
+        consistency: 'all',
+        // with_payload: true,
         score_threshold: .2,
-        with_vector: true
-        // filter: null,
-        // limit: 3,
-        // params: {
-        //     quantization: {
-        //         ingore: false,
-        //         rescore: true,
-        //         oversampling:3.0
-        //     }
-        // }
-    })
-}
-
-const recommend = async (id) => {
-    return await client.recommend(collection_name, {
-        positive: [id],
-        consistency: 'quorum',
-        with_payload: true,
+        with_vector: true,
         filter: null,
-        strategy: "best_score",
-        score_threshold: .5,
-        limit:3,
+        limit: 3,
         params: {
             quantization: {
                 ingore: false,
                 rescore: true,
-                oversampling:3.0,
+                oversampling:3.0
             }
         }
     })
@@ -239,4 +216,3 @@ const data = [
 // create_collection(data).then()
 // client.scroll(collection_name).then(({ points }) => console.log(points))
 search('').then(data => console.log(data))
-// recommend(1).then(data => console.log(data))
