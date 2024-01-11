@@ -21,12 +21,18 @@ const build_documents = (batches) => {
     })
 }
 
+const sleep = (ms) => {
+    console.log('Sleeping')
+    return new Promise((resolve) => setTimeout(resolve, ms))
+}
 
 const build_points = async (batches) => {
     const documents = build_documents(batches)
     const points = []
 
     for (const doc of documents) {
+        console.log('sleeping for 2 seconds')
+        await sleep(2000)
         points.push({
             id: doc.metadata.id,
             vector: await embed.embedQuery(doc.pageContent),
@@ -34,10 +40,11 @@ const build_points = async (batches) => {
         })
     }
 
+    console.log('build points successfully')
     return points
 }
 
-const create_collection = async () => {
+const create_collection = async (data) => {
     console.log('Creating collection')
     await client.recreateCollection(collection_name, {
         vectors: {
@@ -57,11 +64,14 @@ const create_collection = async () => {
         sparse_vectors: {
             "text-sparse": {
                 index: {
-                    on_disk: true
+                    on_disk: false,
+                    full_scan_threshold: 20000
                 }
             }
         }
     })
+
+    await upsert_collection(data)
 
     await client.updateCollection(
         collection_name, {
@@ -81,7 +91,6 @@ const create_collection = async () => {
 const upsert_collection = async (batches) => {
     console.log('Updating collection')
     const points = await build_points(batches)
-    console.log({ points })
     await client.upsert(collection_name, {
         points,
         ordering: 'strong'
@@ -92,7 +101,7 @@ const upsert_collection = async (batches) => {
 const search = async (query) => {
     return await client.search(collection_name, {
         vector: await embed.embedQuery(query),
-        consistency: 'quorum',
+        consistency: 'all',
         with_payload: true,
         score_threshold: .5,
         filter: null,
@@ -209,8 +218,7 @@ const data = [
     },
   ];
 
-// create_collection().then()
-// upsert_collection(data).then().catch(err => console.log(err))
-// client.scroll(collection_name).then(({ points }) => console.log({ points }))
-// search('dibujar').then(data => console.log(data))
-recommend(1).then(data => console.log(data))
+// create_collection(data).then()
+// client.scroll(collection_name).then(({ points }) => console.log(points))
+search('dibujar').then(data => console.log(data))
+// recommend(1).then(data => console.log(data))
