@@ -206,51 +206,6 @@ class QdrantRetriever extends QdrantVectorStore {
 
 }
 
-
-const shoes = [
-    { id: 1, name: 'Nike Air Max 90', brand: 'Nike', color: 'White Black', size: 10, price: 120 },
-    { id: 2, name: 'Adidas Ultraboost 21', brand: 'Adidas', color: 'Black White', size: 9.5, price: 180 },
-    { id: 3, name: 'New Balance 990v5', brand: 'New Balance', color: 'Grey', size: 11, price: 175 },
-    { id: 4, name: 'Puma RS X3', brand: 'Puma', color: 'White Blue', size: 10.5, price: 100 },
-    { id: 5, name: 'Reebok Classic Leather', brand: 'Reebok', color: 'Black', size: 9, price: 75 },
-    //   Add more shoes with similar data as needed
-    { id: 6, name: 'Nike Air Max 270', brand: 'Nike', color: 'Black White', size: 11, price: 150 },
-    { id: 7, name: 'Adidas Ultraboost 22', brand: 'Adidas', color: 'Black White', size: 10, price: 160 },
-    { id: 8, name: 'New Balance 991v2', brand: 'New Balance', color: 'Grey', size: 12, price: 180 },
-    { id: 9, name: 'Puma RS X4', brand: 'Puma', color: 'White Blue', size: 11.5, price: 100 },
-    { id: 10, name: 'Reebok Classic Leather', brand: 'Reebok', color: 'Black', size: 10, price: 70 },
-    // Add more shoes with similar data as needed
-];
-
-const main = async () => {
-
-    const vectorStore = new QdrantRetriever(embeddings, { create: false })
-
-    const retriever = vectorStore.asRetriever(1)
-    const r = retriever.pipe(formatDocumentsAsString)
-    
-    const data = await r.invoke('Nike air max')
-    console.log(data)
-    // await vectorStore.addDocuments(shoes)
-
-    // const vector = await embeddings.embedQuery('Nike Air Max')
-    // console.log(vector)
-    // const data = await vectorStore.similaritySearchVectorWithScore(vector, 2)
-    // console.log(data)
-
-    // const data = await vectorStore.similaritySearch('Nike Air Max')
-    // console.log(data)
-
-    // const { points } = await vectorStore.scroll()
-    // console.log(points.map(point => point.payload))
-
-
-    // const retriever = vectorStore.asRetriever()
-    // const documents = await retriever.getRelevantDocuments('Nike Air Max 90')
-    // console.log(documents)
-}
-
-// main().then()
 const vectorStore = new QdrantRetriever(embeddings, { create: false })
 
-module.exports = vectorStore.asRetriever()
+module.exports = { vectorStore, retriever: vectorStore.asRetriever() }

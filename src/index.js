@@ -19,7 +19,7 @@ const { formatDocumentsAsString } = require("langchain/util/document");
 
 const { CONDENSE_TEMPLATE, ANSWER_TEMPLATE } = require("./templates");
 
-const retriever = require("./retriever");
+const { retriever } = require("./retriever");
 
 let model = require("./model");
 model = model.bind({ stopSequences: ['\n', '\n\n', '.']})
