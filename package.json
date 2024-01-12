@@ -4,11 +4,14 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+      "start": "node src/index.js"
   },
-  "keywords": [],
+  "keywords": ["chatbot", "whatsapp", "qdrant", "langchain"],
   "author": "Elimeleth Capuano",
   "license": "ISC",
+  "repository": {
+    "url": "https://github.com/Elimeleth/qdrant"
+  },
   "dependencies": {
     "@langchain/cohere": "^0.0.2",
     "@langchain/community": "^0.0.16",
