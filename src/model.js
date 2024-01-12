@@ -8,10 +8,9 @@ const { Cohere } = require("@langchain/cohere");
 const { getEnvironmentVariable } = require("@langchain/core/utils/env");
 
 
-const { OpenAI } = require("@langchain/openai");
-const { HumanMessage } = require("@langchain/core/messages");
+const { ChatOpenAI } = require("@langchain/openai");
 
-const CohereModel =  new Cohere({
+const CohereModel = new Cohere({
   apiKey: getEnvironmentVariable('COHERE_API_KEY'), // Default
   maxRetries: 2,
   temperature: 0,
@@ -24,9 +23,22 @@ const CohereModel =  new Cohere({
 });
 
 
-const OpenAiModel = new OpenAI({
+const OPENAI_CHAT_MODEL = new ChatOpenAI({
+  openAIApiKey: getEnvironmentVariable('OPENAI_API_KEY'),
   temperature: 0,
-  openAIApiKey: getEnvironmentVariable('OPENAI_API_KEY'), // In Node.js defaults to process.env.OPENAI_API_KEY
-});
-
-module.exports = OpenAiModel
+  maxTokens: 250,
+  maxRetries: 2,
+  maxConcurrency: 5,
+  // modelName: MODELS_NAMES_OPENAI.GPT_3_5_TURBO_0613,
+  configuration: {
+    basePath: "https://oai.hconeai.com/v1",
+    baseOptions: {
+      headers: {
+        // Add your Helicone API Key
+        "Helicone-Auth": "Bearer sk-helicone-x5gkkwa-mngubcy-twykwcy-ya7pvwq",
+        "Helicone-Cache-Enabled": "false"
+      }
+    }
+  }
+})
+module.exports = OPENAI_CHAT_MODEL
