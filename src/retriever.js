@@ -1,4 +1,3 @@
-require("dotenv/config")
 const { QdrantVectorStore } = require("@langchain/community/vectorstores/qdrant")
 const { v4 } = require("uuid")
 const { Document } = require("@langchain/core/documents");
@@ -225,4 +224,6 @@ const main = async () => {
     // console.log(documents)
 }
 
-main().then()
+// main().then()
+const vectorStore = new QdrantRetriever(embeddings, { create: false })
+module.exports = vectorStore.asRetriever()
