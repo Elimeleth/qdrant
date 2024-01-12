@@ -24,7 +24,10 @@ class QdrantRetriever extends QdrantVectorStore {
         this.collectionName = args?.collectionName ?? "documents";
         this.collectionConfig = args?.collectionConfig || {};
 
-        if (args?.create) this.ensureCollection().then();
+        if (args?.create) {
+            this.deleteCollection().then().catch()
+            this.ensureCollection().then();
+        }
     }
 
     async build_documents (batches) {
@@ -140,16 +143,16 @@ class QdrantRetriever extends QdrantVectorStore {
                 vectors: {
                     distance: 'Cosine',
                     size: (await this.embeddings.embedQuery('foo'))?.length || 384,
-                    on_disk: false
+                    on_disk: false,
+                    quantization_config: {
+                        binary: {
+                            always_ram: true
+                        }
+                    },
                 },
                 "optimizers_config": {
-                    default_segment_number: 5,
+                    default_segment_number: 2,
                     indexing_threshold: 0,
-                },
-                "quantization_config": {
-                    binary: {
-                        always_ram: true
-                    }
                 },
                 sparse_vectors: {
                     "text": {
@@ -193,19 +196,18 @@ const shoes = [
 
 const main  = async () => {
 
-    const vectorStore = new QdrantRetriever(embeddings, {})
+    const vectorStore = new QdrantRetriever(embeddings, { create: false })
     // await vectorStore.addDocuments(shoes)
-    // await vectorStore.deleteCollection()
 
-
-    const vector = await embeddings.embedQuery('Nike Air')
-    const data = await vectorStore.similaritySearch(vector, 2)
-    console.log(data)
-
-    // const data = await vectorStore.similaritySearch(vector)
+    // const vector = await embeddings.embedQuery('Nike Air Max')
+    // console.log(vector)
+    // const data = await vectorStore.similaritySearchVectorWithScore(vector, 2)
     // console.log(data)
 
-    const { points } = await vectorStore.scroll()
+    const data = await vectorStore.similaritySearch('Nike Air Max')
+    console.log(data)
+
+    // const { points } = await vectorStore.scroll()
     // console.log(points.map(point => point.payload))
 
 
@@ -215,4 +217,3 @@ const main  = async () => {
 }
 
 main().then()
-module.exports = QdrantRetriever
