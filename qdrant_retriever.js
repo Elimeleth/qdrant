@@ -69,6 +69,11 @@ class QdrantRetriever extends QdrantVectorStore {
             vector,
             limit: k,
             filter,
+            params: {
+                quantization: {
+                    rescore: false
+                }
+            },
         });
         const result = results.map((res) => [
             new Document({
@@ -117,6 +122,7 @@ class QdrantRetriever extends QdrantVectorStore {
                 this.collectionName, {
                 "optimizers_config": {
                     indexing_threshold: 20000,
+                    memmap_threshold: 20000
                 }
             });
 
@@ -143,7 +149,6 @@ class QdrantRetriever extends QdrantVectorStore {
                 vectors: {
                     distance: 'Cosine',
                     size: (await this.embeddings.embedQuery('foo'))?.length || 384,
-                    on_disk: false,
                     quantization_config: {
                         scalar: {
                             type: "int8",
@@ -153,8 +158,8 @@ class QdrantRetriever extends QdrantVectorStore {
                     },
                 },
                 "optimizers_config": {
-                    default_segment_number: 2,
                     indexing_threshold: 0,
+                    memmap_threshold: 0
                 },
                 sparse_vectors: {
                     "text": {
@@ -199,15 +204,15 @@ const shoes = [
 const main  = async () => {
 
     const vectorStore = new QdrantRetriever(embeddings, { create: false })
-    await vectorStore.addDocuments(shoes)
+    // await vectorStore.addDocuments(shoes)
 
     // const vector = await embeddings.embedQuery('Nike Air Max')
     // console.log(vector)
     // const data = await vectorStore.similaritySearchVectorWithScore(vector, 2)
     // console.log(data)
 
-    // const data = await vectorStore.similaritySearch('Nike Air Max')
-    // console.log(data)
+    const data = await vectorStore.similaritySearch('Nike Air Max')
+    console.log(data)
 
     // const { points } = await vectorStore.scroll()
     // console.log(points.map(point => point.payload))
