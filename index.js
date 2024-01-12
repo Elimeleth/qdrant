@@ -1,16 +1,11 @@
 require("dotenv/config")
 const qdrant = require("@qdrant/js-client-rest")
-const cohere = require("@langchain/cohere");
 const collection_name = "example";
 
 const { getEnvironmentVariable } = require("@langchain/core/utils/env");
 
-const { default: axios } = require("axios")
+const embeddings = require("./embedding");
 
-const embed = {
-    embedQuery: async (text) => (await axios.get(`http://localhost:8000/embed/${text}`)).data,
-    embedDocuments: async (text) => (await axios.get(`http://localhost:8000/embed/${text}`)).data
-}
 const client = new qdrant.QdrantClient({
     url: "http://localhost:6333"
 })
@@ -25,7 +20,7 @@ const build_documents = async (batches) => {
                 ...batch,
                 vector: {
                     'text': {
-                        ...await embed.embedQuery(Object.values(batch).join(' '))
+                        ...await embedding.embedQuery(Object.values(batch).join(' '))
                     }
                 }
             }
