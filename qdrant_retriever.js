@@ -145,9 +145,11 @@ class QdrantRetriever extends QdrantVectorStore {
                     size: (await this.embeddings.embedQuery('foo'))?.length || 384,
                     on_disk: false,
                     quantization_config: {
-                        binary: {
-                            always_ram: true
-                        }
+                        scalar: {
+                            type: "int8",
+                            quantile: 0.99,
+                            always_ram: true,
+                          }
                     },
                 },
                 "optimizers_config": {
@@ -197,15 +199,15 @@ const shoes = [
 const main  = async () => {
 
     const vectorStore = new QdrantRetriever(embeddings, { create: false })
-    // await vectorStore.addDocuments(shoes)
+    await vectorStore.addDocuments(shoes)
 
     // const vector = await embeddings.embedQuery('Nike Air Max')
     // console.log(vector)
     // const data = await vectorStore.similaritySearchVectorWithScore(vector, 2)
     // console.log(data)
 
-    const data = await vectorStore.similaritySearch('Nike Air Max')
-    console.log(data)
+    // const data = await vectorStore.similaritySearch('Nike Air Max')
+    // console.log(data)
 
     // const { points } = await vectorStore.scroll()
     // console.log(points.map(point => point.payload))
