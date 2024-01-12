@@ -5,6 +5,25 @@ const { getEnvironmentVariable } = require("@langchain/core/utils/env");
 const { QdrantClient } = require("@qdrant/js-client-rest");
 const embeddings = require("./embedding");
 
+/*----------------------------------------------------------------
+
+La clase QdrantRetriever Extiende de QdrantVectorStore para con ello poder sobreescribir algunos metodos
+tanto la configuración del cliente como los metodos de Embeddings y de búsqueda
+
+Basado en el articulo de Qdrant https://qdrant.tech/articles/sparse-vectors/
+
+Podemos acoplar esto en un RunnablePassthrough para poder interactuar mediante un ChatBot
+para lograr esto dado que aun no contamos con una libreria en npm que nos facilite la creacion del formato
+
+spalde { indices: number[], values: number[] }
+he usado un pequeño API en Python y FastApi
+
+haciendo uso de la libreria pinecone-text https://github.com/pinecone-io/pinecone-text
+Esto con el proposito a escribir nuestro método de Embeddings el cual le pasaremos a la clase
+
+Ademas que la clase recibe un argumento opcional el cual es un objeto alli debes declarar { crearte: true } si deseas sobre escribir la colleción
+
+--------------------------------------------------------------------*/
 class QdrantRetriever extends QdrantVectorStore {
     constructor(embeddings, args) {
         super(embeddings, args)
