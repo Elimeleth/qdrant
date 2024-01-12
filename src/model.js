@@ -13,8 +13,8 @@ const { ChatOpenAI } = require("@langchain/openai");
 const CohereModel = new Cohere({
   apiKey: getEnvironmentVariable('COHERE_API_KEY'), // Default
   maxRetries: 2,
-  temperature: 0,
-  maxTokens: 90,
+  temperature: .5,
+  maxTokens: 50,
   maxConcurrency: 2,
   cache: true,
   onFailedAttempt: (err) => {
@@ -41,4 +41,4 @@ const OPENAI_CHAT_MODEL = new ChatOpenAI({
     }
   }
 })
-module.exports = OPENAI_CHAT_MODEL
+module.exports = CohereModel

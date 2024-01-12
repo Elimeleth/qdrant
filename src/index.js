@@ -17,27 +17,28 @@ const { StringOutputParser } = require("@langchain/core/output_parsers");
 const { formatDocumentsAsString } = require("langchain/util/document");
 
 
-const { ANSWER_TEMPLATE, CONDENSE_TEMPLATE } = require("./templates");
+const { CONDENSE_TEMPLATE, ANSWER_TEMPLATE } = require("./templates");
 
-const model = require("./model");
 const retriever = require("./retriever");
 
+let model = require("./model");
+model = model.bind({ stopSequences: ['\n', '\n\n', '.']})
 
 class RunnablePassthroughChat {
     chat_history = [];
     retriever = retriever;
-    CONDENSE_QUESTION_PROMPT = PromptTemplate.fromTemplate(CONDENSE_TEMPLATE) // El primer PROMPT indica como actuar en consecuencia
-    ANSWER_PROMPT = PromptTemplate.fromTemplate(ANSWER_TEMPLATE) // El segundo PROMPT indica como responder
-    
+    CONDENSE_QUESTION_PROMPT = PromptTemplate.fromTemplate(CONDENSE_TEMPLATE)
+    ANSWER_TEMPLATE = PromptTemplate.fromTemplate(ANSWER_TEMPLATE)
 
     formatChatHistory(chatHistory) {
+        if (!chatHistory.length) return ''
         const formattedDialogueTurns = chatHistory.map(
             (dialogueTurn) => `Human: ${dialogueTurn[0]}\nAssistant: ${dialogueTurn[1]}`
         );
         return formattedDialogueTurns.join("\n");
     };
 
-    async conversationalRetrievalQAChain() {
+    conversationalRetrievalQAChain() {
         const standaloneQuestionChain = RunnableSequence.from([
             {
                 question: (input) => input.question,
@@ -49,15 +50,15 @@ class RunnablePassthroughChat {
             model,
             new StringOutputParser() // aplaca la salida a string,
         ]);
-        
+
         const answerChain = RunnableSequence.from([
             {
-                context: this.retriever.pipe(formatDocumentsAsString),
-                question: new RunnablePassthrough() // Construimos nuestro Runnable
+              context: this.retriever.pipe(formatDocumentsAsString),
+              question: new RunnablePassthrough(),
             },
-            this.ANSWER_PROMPT,
+            this.ANSWER_TEMPLATE,
             model,
-        ]);
+          ]);
 
         return standaloneQuestionChain.pipe(answerChain)
     }
@@ -65,11 +66,11 @@ class RunnablePassthroughChat {
 
     async call(question) {
         try {
-            const conversationalRetrievalQAChain = await this.conversationalRetrievalQAChain()
+            const conversationalRetrievalQAChain = this.conversationalRetrievalQAChain()
 
             const content = await conversationalRetrievalQAChain.invoke({
                 question,
-                chat_history: this.chat_history,
+                chat_history: this.chatHistory || []
             })
 
             this.chat_history.push([question, content])
@@ -83,8 +84,8 @@ class RunnablePassthroughChat {
 }
 
 const main = async () => {
-    const runnable = new RunnablePassthroughChat()
-    const content = await runnable.call('Que precio tiene el Nike Air Max 90?')
+    const runnable = new RunnablePassthroughChat(1)
+    const content = await runnable.call('Que color son los new balance?')
 
     console.log(content)
 }

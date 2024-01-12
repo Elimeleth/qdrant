@@ -4,6 +4,7 @@ const { Document } = require("@langchain/core/documents");
 const { getEnvironmentVariable } = require("@langchain/core/utils/env");
 const { QdrantClient } = require("@qdrant/js-client-rest");
 const embeddings = require("./embedding");
+const { formatDocumentsAsString } = require("langchain/util/document");
 
 /*----------------------------------------------------------------
 
@@ -224,6 +225,12 @@ const shoes = [
 const main = async () => {
 
     const vectorStore = new QdrantRetriever(embeddings, { create: false })
+
+    const retriever = vectorStore.asRetriever(1)
+    const r = retriever.pipe(formatDocumentsAsString)
+    
+    const data = await r.invoke('Nike air max')
+    console.log(data)
     // await vectorStore.addDocuments(shoes)
 
     // const vector = await embeddings.embedQuery('Nike Air Max')
@@ -231,8 +238,8 @@ const main = async () => {
     // const data = await vectorStore.similaritySearchVectorWithScore(vector, 2)
     // console.log(data)
 
-    const data = await vectorStore.similaritySearch('Nike Air Max')
-    console.log(data)
+    // const data = await vectorStore.similaritySearch('Nike Air Max')
+    // console.log(data)
 
     // const { points } = await vectorStore.scroll()
     // console.log(points.map(point => point.payload))
@@ -245,4 +252,5 @@ const main = async () => {
 
 // main().then()
 const vectorStore = new QdrantRetriever(embeddings, { create: false })
+
 module.exports = vectorStore.asRetriever()

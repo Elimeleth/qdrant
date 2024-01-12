@@ -6,25 +6,16 @@ lo que hacemos es escribir nuestra regla para el funcionamiento de neustro RAG
 las variables en {} son para el entendimiento posterior en nuestro algoritmo
 */
 
-const CONDENSE_TEMPLATE = `Eres un asesor profesional del area de tecnologia
+const CONDENSE_TEMPLATE = `Given the following conversation and a follow up question, rephrase the follow up question to be a standalone question, in its original language.
 
-Debes ofrecer unicamente la informacion que tienes en el contexto.
-Se puntual y breve para generar nuevos leads.
-
-Chat history:
+Chat History:
 {chat_history}
+Follow Up Input: {question}
+Standalone question:`
 
-Recuerda las siguientes reglas:
-- No saludes mas de una vez.
-
-Pregunta del cliente:
-{question}
-
-Tu respuesta:
-`
-const ANSWER_TEMPLATE = `Siempre debes responder las preguntas en español y basado en el siguiente contexto:
+const ANSWER_TEMPLATE = `Answer the question based only on the following context:
 {context}
 
-Pregunta: {question}`
+Question: {question}`
 
-module.exports = { CONDENSE_TEMPLATE, ANSWER_TEMPLATE }
+module.exports = { CONDENSE_TEMPLATE, ANSWER_TEMPLATE}
