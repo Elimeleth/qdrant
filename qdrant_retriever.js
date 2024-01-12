@@ -30,10 +30,10 @@ class QdrantRetriever extends QdrantVectorStore {
         }
     }
 
-    async build_documents (batches) {
+    async build_documents(batches) {
         const documents = []
         for (const batch of batches) {
-            
+
             documents.push({
                 pageContent: Object.entries(batch).map(([key, value]) => `${key} ${value}`).join(' '),
                 metadata: {
@@ -41,10 +41,10 @@ class QdrantRetriever extends QdrantVectorStore {
                 }
             })
         }
-        
+
         return documents
     }
-    
+
 
     async similaritySearchVectorWithScore(vector, k, filter) {
 
@@ -64,7 +64,7 @@ class QdrantRetriever extends QdrantVectorStore {
             name: 'text',
             vector
         }
-        
+
         const results = await this.client.search(this.collectionName, {
             vector,
             limit: k,
@@ -72,7 +72,9 @@ class QdrantRetriever extends QdrantVectorStore {
             params: {
                 quantization: {
                     rescore: false
-                }
+                },
+                hnsw_ef: 128,
+                exact: false
             },
         });
         const result = results.map((res) => [
@@ -154,7 +156,7 @@ class QdrantRetriever extends QdrantVectorStore {
                             type: "int8",
                             quantile: 0.99,
                             always_ram: true,
-                          }
+                        }
                     },
                 },
                 "optimizers_config": {
@@ -175,11 +177,11 @@ class QdrantRetriever extends QdrantVectorStore {
         console.log('Collection found: ' + this.collectionName)
     }
 
-    async scroll () {
-        return await this.client.scroll(this.collectionName, { with_vector: true, with_payload: true})
+    async scroll() {
+        return await this.client.scroll(this.collectionName, { with_vector: true, with_payload: true })
     }
 
-    async deleteCollection () {
+    async deleteCollection() {
         return this.client.deleteCollection(this.collectionName)
     }
 
@@ -201,7 +203,7 @@ const shoes = [
     // Add more shoes with similar data as needed
 ];
 
-const main  = async () => {
+const main = async () => {
 
     const vectorStore = new QdrantRetriever(embeddings, { create: false })
     // await vectorStore.addDocuments(shoes)
