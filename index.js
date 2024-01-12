@@ -59,15 +59,15 @@ const create_collection = async (data) => {
         //     size: (await embed.embedQuery('foo')).length,
         //     on_disk: true
         // },
-        // "optimizers_config": {
-        //     default_segment_number: 5,
-        //     indexing_threshold: 0,
-        // },
-        // "quantization_config": {
-        //     binary: {
-        //         always_ram: true
-        //     }
-        // },
+        "optimizers_config": {
+            default_segment_number: 5,
+            indexing_threshold: 0,
+        },
+        "quantization_config": {
+            binary: {
+                always_ram: true
+            }
+        },
         sparse_vectors: {
             "text": {
                 index: {
