@@ -127,12 +127,6 @@ class QdrantRetriever extends QdrantVectorStore {
             },
         }));
         try {
-            await this.client.updateCollection(
-                this.collectionName, {
-                "optimizers_config": {
-                    indexing_threshold: 0,
-                }
-            });
 
             await this.client.upsert(this.collectionName, {
                 wait: true,
