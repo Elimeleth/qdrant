@@ -5,17 +5,16 @@ pero se puede usar cloudflare woker con una AI pequeña corriendo como serverles
 */
 
 import { Cohere } from "@langchain/cohere";
-import { getEnvironmentVariable } from "@langchain/core/utils/env";
-
 import { ChatOpenAI } from "@langchain/openai";
-
 import { ChatCloudflareWorkersAI } from "@langchain/cloudflare";
+
+import { getEnvironmentVariable } from "@langchain/core/utils/env";
 import { StringOutputParser } from "@langchain/core/output_parsers";
 
 const CloudflareModel = new ChatCloudflareWorkersAI({
     model: "@cf/meta/llama-2-7b-chat-fp16",
-    cloudflareAccountId: "35f5836daf61eba20f4fd3010d037b87",
-    cloudflareApiToken: "Bwy5yiS3JRsmigErQhOEKcmH-7Gu8GTrKhhxCyv_",
+    cloudflareAccountId: getEnvironmentVariable("CLOUDFLARE_ACCOUNT_ID"),
+    cloudflareApiToken: getEnvironmentVariable("CLOUDFLARE_TOKEN_ID"),
     maxConcurrency: 2,
     maxRetries: 5,
     onFailedAttempt: (err) => {
@@ -33,7 +32,7 @@ const CohereModel = new Cohere({
   onFailedAttempt: (err) => {
     console.log({ err })
   }
-});
+})
 
 
 const OpenAiModel = new ChatOpenAI({
@@ -48,7 +47,7 @@ const OpenAiModel = new ChatOpenAI({
     baseOptions: {
       headers: {
         // Add your Helicone API Key
-        "Helicone-Auth": "Bearer sk-helicone-x5gkkwa-mngubcy-twykwcy-ya7pvwq",
+        "Helicone-Auth": "Bearer "+getEnvironmentVariable("HELICONE_API_KEY"),
         "Helicone-Cache-Enabled": "false"
       }
     }
