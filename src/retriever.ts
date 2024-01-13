@@ -1,10 +1,10 @@
-const { QdrantVectorStore } = require("@langchain/community/vectorstores/qdrant")
-const { v4 } = require("uuid")
-const { Document } = require("@langchain/core/documents");
-const { getEnvironmentVariable } = require("@langchain/core/utils/env");
-const { QdrantClient } = require("@qdrant/js-client-rest");
-const embeddings = require("./embedding");
-const { formatDocumentsAsString } = require("langchain/util/document");
+import { QdrantVectorStore } from "@langchain/community/vectorstores/qdrant";
+import { v4 } from "uuid";
+import { Document } from "@langchain/core/documents";
+import { getEnvironmentVariable } from "@langchain/core/utils/env";
+import { QdrantClient } from "@qdrant/js-client-rest";
+import embeddings from "./embedding";
+import { formatDocumentsAsString } from "langchain/util/document";
 
 /*----------------------------------------------------------------
 
@@ -25,8 +25,28 @@ Esto con el proposito a escribir nuestro método de Embeddings el cual le pasare
 Ademas que la clase recibe un argumento opcional el cual es un objeto alli debes declarar { crearte: true } si deseas sobre escribir la colleción
 
 --------------------------------------------------------------------*/
+
+type Vectors = number[]|{indices: number[], values: number[]}
+
+type Embeddings = {
+    embedQuery: (query: string) => Promise<Vectors>,
+    embedDocuments: (query: string[]) => Promise<Vectors[]>
+
+}
+
+type Documents = {
+    pageContent: string,
+    metadata: {
+        [key: string]: any
+    }
+}
+
+type Args = {
+    [key: string]: any
+}
+
 class QdrantRetriever extends QdrantVectorStore {
-    constructor(embeddings, args) {
+    constructor(embeddings, args: Args) {
         super(embeddings, args)
 
         const url = args?.url ?? getEnvironmentVariable("QDRANT_URL");
@@ -49,7 +69,7 @@ class QdrantRetriever extends QdrantVectorStore {
         }
     }
 
-    async build_documents(batches) {
+    async build_documents(batches: any[]) {
         const documents = []
         for (const batch of batches) {
 
@@ -65,8 +85,8 @@ class QdrantRetriever extends QdrantVectorStore {
     }
 
 
-    async similaritySearchVectorWithScore(vector, k, filter) {
-
+    // @ts-ignore
+    async similaritySearchVectorWithScore(vector, k: number, filter: any) {
         /*
             vector puede ser number[][]
             or
@@ -99,6 +119,7 @@ class QdrantRetriever extends QdrantVectorStore {
         const result = results.map((res) => [
             new Document({
                 metadata: res.payload.metadata,
+                // @ts-ignore
                 pageContent: res.payload.content,
             }),
             res.score,
@@ -106,24 +127,24 @@ class QdrantRetriever extends QdrantVectorStore {
         return result;
     }
 
-    async addDocuments(batches, documentOptions) {
+    async addDocuments(batches: any[], documentOptions: any = {}) {
         const documents = await this.build_documents(batches)
         const texts = documents.map(doc => doc.pageContent);
         await this.addVectors(await this.embeddings.embedDocuments(texts), documents, documentOptions);
     }
 
-    async addVectors(vectors, documents, documentOptions) {
+    async addVectors(vectors, documents: Documents[], documentOptions: any = {}) {
         if (vectors.length === 0) {
             return;
         }
-        console.log('here data here')
+        
         const points = vectors.map((vector, idx) => ({
             id: v4(),
             vector: (vector?.indices && vector?.values) ? { 'text': vector } : vector,
             payload: {
                 content: documents[idx].pageContent,
                 metadata: documents[idx].metadata,
-                customPayload: documentOptions?.customPayload[idx],
+                customPayload: documentOptions?.customPayload ? documentOptions.customPayload[idx] : {},
             },
         }));
         try {
@@ -200,6 +221,5 @@ class QdrantRetriever extends QdrantVectorStore {
 
 }
 
-const vectorStore = new QdrantRetriever(embeddings, { create: false })
-
-module.exports = { vectorStore, retriever: vectorStore.asRetriever() }
+export const vectorStore = new QdrantRetriever(embeddings, { create: false })
+export const retriever = vectorStore.asRetriever(2)

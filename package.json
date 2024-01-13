@@ -2,17 +2,25 @@
   "name": "qdrant_tutos",
   "version": "1.0.0",
   "description": "",
+  "type": "module",
   "main": "index.js",
   "scripts": {
-      "start": "node src/index.js"
+    "build": "node ./node_modules/rollup/dist/bin/rollup -c",
+    "start": "node dist/index.js"
   },
-  "keywords": ["chatbot", "whatsapp", "qdrant", "langchain"],
+  "keywords": [
+    "chatbot",
+    "whatsapp",
+    "qdrant",
+    "langchain"
+  ],
   "author": "Elimeleth Capuano",
   "license": "ISC",
   "repository": {
     "url": "https://github.com/Elimeleth/qdrant"
   },
   "dependencies": {
+    "@langchain/cloudflare": "^0.0.1",
     "@langchain/cohere": "^0.0.2",
     "@langchain/community": "^0.0.16",
     "@langchain/core": "^0.1.12",
@@ -23,5 +31,13 @@
     "dotenv": "^16.3.1",
     "langchain": "^0.1.2",
     "uuid": "^9.0.1"
+  },
+  "devDependencies": {
+    "@rollup/plugin-node-resolve": "^15.2.3",
+    "@rollup/plugin-terser": "^0.4.4",
+    "@rollup/plugin-typescript": "^11.1.6",
+    "rollup": "^4.9.2",
+    "rollup-plugin-typescript2": "^0.35.0",
+    "tsx": "^3.14.0"
   }
 }

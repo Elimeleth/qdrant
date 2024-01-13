@@ -1,4 +1,4 @@
-const { default: axios } = require("axios")
+import axios from "axios"
 
 const embeddings = {
     embedQuery: async (text) => (await axios.get(`http://localhost:8030/sparse/${text}`)).data,
@@ -13,4 +13,4 @@ const embeddings = {
     }
 }
 
-module.exports = embeddings
+export default embeddings;

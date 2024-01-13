@@ -1,4 +1,4 @@
-require("dotenv/config")
+import "dotenv/config"
 
 /*
 Langchain: https://js.langchain.com/docs/expression_language/how_to/routing#using-a-custom-function
@@ -8,32 +8,38 @@ con algo de logica un poco avancada podriamos controlar los callbacks que usa la
 y con ello tener aún más control sobre nuestro chatbot
 */
 
-const { PromptTemplate } = require("@langchain/core/prompts");
-const {
+import { PromptTemplate }  from "@langchain/core/prompts";
+import {
     RunnableSequence,
     RunnablePassthrough,
-} = require("@langchain/core/runnables");
-const { StringOutputParser } = require("@langchain/core/output_parsers");
-const { formatDocumentsAsString } = require("langchain/util/document");
+}  from "@langchain/core/runnables";
+import { StringOutputParser }  from "@langchain/core/output_parsers";
+import { formatDocumentsAsString }  from "langchain/util/document";
 
 
-const { CONDENSE_TEMPLATE, ANSWER_TEMPLATE } = require("./templates");
+import { CONDENSE_TEMPLATE, ANSWER_TEMPLATE }  from "./templates";
 
-const { retriever } = require("./retriever");
+import { retriever }  from "./retriever";
 
-let model = require("./model");
-model = model.bind({ stopSequences: ['\n', '\n\n', '.']})
+import model from "./model";
+
+type Conversational = {
+    question: string,
+    chat_history: [string, string][]
+}
+
+type ChatHistory = [string, string]
 
 class RunnablePassthroughChat {
-    chat_history = [];
+    chat_history: ChatHistory[] = [];
     retriever = retriever;
     CONDENSE_QUESTION_PROMPT = PromptTemplate.fromTemplate(CONDENSE_TEMPLATE)
     ANSWER_TEMPLATE = PromptTemplate.fromTemplate(ANSWER_TEMPLATE)
 
-    formatChatHistory(chatHistory) {
-        if (!chatHistory.length) return ''
-        const formattedDialogueTurns = chatHistory.map(
-            (dialogueTurn) => `Human: ${dialogueTurn[0]}\nAssistant: ${dialogueTurn[1]}`
+    formatChatHistory(chat_history: ChatHistory[]) {
+        if (!chat_history.length) return ''
+        const formattedDialogueTurns = chat_history.map(
+            (dialogueTurn: ChatHistory) => `Human: ${dialogueTurn[0]}\nAssistant: ${dialogueTurn[1]}`
         );
         return formattedDialogueTurns.join("\n");
     };
@@ -41,8 +47,8 @@ class RunnablePassthroughChat {
     conversationalRetrievalQAChain() {
         const standaloneQuestionChain = RunnableSequence.from([
             {
-                question: (input) => input.question,
-                chat_history: (input) =>
+                question: (input: Conversational) => input.question,
+                chat_history: (input: Conversational) =>
                     // esto con la finalidad de que nuestro RAG tenga conocimiento del flujo
                     this.formatChatHistory(input.chat_history) // convertimos nuestro historial [pregunta, respuesta][] a un Human: ...\nAssistant: ...,
             },
@@ -64,13 +70,13 @@ class RunnablePassthroughChat {
     }
 
 
-    async call(question) {
+    async call(question: string) {
         try {
             const conversationalRetrievalQAChain = this.conversationalRetrievalQAChain()
 
             const content = await conversationalRetrievalQAChain.invoke({
                 question,
-                chat_history: this.chatHistory || []
+                chat_history: this.chat_history
             })
 
             this.chat_history.push([question, content])
@@ -84,10 +90,10 @@ class RunnablePassthroughChat {
 }
 
 const main = async () => {
-    const runnable = new RunnablePassthroughChat(1)
-    const content = await runnable.call('Que color son los new balance?')
+    const runnable = new RunnablePassthroughChat()
+    const content = await runnable.call('Que color son los new balance y su precio mas barato?')
 
     console.log(content)
 }
 
-main().then()
+await main()
