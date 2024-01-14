@@ -1,4 +1,6 @@
-const { vectorStore } = require("../retriever");
+import { formatDocumentsAsString } from "langchain/util/document";
+import { vectorStore } from "../retriever";
+import embeddings from "src/embedding";
 
 /*
 
