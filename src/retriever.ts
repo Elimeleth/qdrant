@@ -86,7 +86,7 @@ class QdrantRetriever extends QdrantVectorStore {
 
 
     // @ts-ignore
-    async similaritySearchVectorWithScore(vector, k: number, filter: any) {
+    async similaritySearchVectorWithScore(vector, k?: number, filter?: any) {
         /*
             vector puede ser number[][]
             or

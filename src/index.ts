@@ -91,7 +91,7 @@ class RunnablePassthroughChat {
 
 const main = async () => {
     const runnable = new RunnablePassthroughChat()
-    const content = await runnable.call('Que color son los new balance y su precio mas barato?')
+    const content = await runnable.call('En que colores tienes las Adidas?')
 
     console.log(content)
 }
