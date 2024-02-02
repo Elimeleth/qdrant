@@ -151,7 +151,7 @@ class QdrantRetriever extends QdrantVectorStore {
             },
         }));
         try {
-
+            console.log("upsert start!")
             await this.client.upsert(this.collectionName, {
                 wait: true,
                 points,
@@ -227,5 +227,6 @@ class QdrantRetriever extends QdrantVectorStore {
 export const vectorStore = new QdrantRetriever(new CohereEmbeddings({
     apiKey: 'c208ld0OS1XSmTb2LEpphOUMGas6pLLgtYM2G9pu'
 }), { create: false })
-//vectorStore.addDocuments(docs)
-export const retriever = vectorStore.asRetriever(2)
+// vectorStore.addDocuments(docs)
+// console.log(await vectorStore.scroll())
+export const retriever = vectorStore.asRetriever(6)

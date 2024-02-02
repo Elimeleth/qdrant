@@ -38,12 +38,15 @@ dependencies:
   html-to-text:
     specifier: ^9.0.5
     version: 9.0.5
+  ignore:
+    specifier: ^5.3.1
+    version: 5.3.1
   jsdom:
     specifier: ^24.0.0
     version: 24.0.0
   langchain:
     specifier: ^0.1.12
-    version: 0.1.12(@qdrant/js-client-rest@1.7.0)(axios@1.6.7)(cohere-ai@7.7.5)(html-to-text@9.0.5)(jsdom@24.0.0)
+    version: 0.1.12(@qdrant/js-client-rest@1.7.0)(axios@1.6.7)(cohere-ai@7.7.5)(html-to-text@9.0.5)(ignore@5.3.1)(jsdom@24.0.0)
   uuid:
     specifier: ^9.0.1
     version: 9.0.1
@@ -1608,6 +1611,11 @@ packages:
       safer-buffer: 2.1.2
     dev: false
 
+  /ignore@5.3.1:
+    resolution: {integrity: sha512-5Fytz/IraMjqpwfd34ke28PTVMjZjJG2MPn5t7OE4eUCUNf8BAa7b5WUS9/Qvr6mwOQS7Mk6vdsMno5he+T8Xw==}
+    engines: {node: '>= 4'}
+    dev: false
+
   /is-any-array@2.0.1:
     resolution: {integrity: sha512-UtilS7hLRu++wb/WBAw9bNuP1Eg04Ivn1vERJck8zJthEvXCBEBpGR/33u/xLKWEQf95803oalHrVDptcAvFdQ==}
     dev: false
@@ -1703,7 +1711,7 @@ packages:
     engines: {node: '>=0.10.0'}
     dev: false
 
-  /langchain@0.1.12(@qdrant/js-client-rest@1.7.0)(axios@1.6.7)(cohere-ai@7.7.5)(html-to-text@9.0.5)(jsdom@24.0.0):
+  /langchain@0.1.12(@qdrant/js-client-rest@1.7.0)(axios@1.6.7)(cohere-ai@7.7.5)(html-to-text@9.0.5)(ignore@5.3.1)(jsdom@24.0.0):
     resolution: {integrity: sha512-F3WK6KJGeA+gnXIrijKy892yEGzUOpO4pEWWphUrCxrtfjXh1hFcXfj5Oh14qGvaUCmn8ezBqQMJ/LhL6z3DhQ==}
     engines: {node: '>=18'}
     peerDependencies:
@@ -1873,6 +1881,7 @@ packages:
       binary-extensions: 2.2.0
       expr-eval: 2.0.2
       html-to-text: 9.0.5
+      ignore: 5.3.1
       js-tiktoken: 1.0.10
       js-yaml: 4.1.0
       jsdom: 24.0.0

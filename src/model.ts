@@ -26,7 +26,7 @@ const CohereModel = new Cohere({
   apiKey: getEnvironmentVariable('COHERE_API_KEY'), // Default
   maxRetries: 2,
   temperature: .5,
-  maxTokens: 50,
+  maxTokens: 1000,
   maxConcurrency: 2,
   cache: true,
   onFailedAttempt: (err) => {
@@ -35,24 +35,24 @@ const CohereModel = new Cohere({
 })
 
 
-const OpenAiModel = new ChatOpenAI({
-  openAIApiKey: getEnvironmentVariable('OPENAI_API_KEY'),
-  temperature: 0,
-  maxTokens: 250,
-  maxRetries: 2,
-  maxConcurrency: 5,
-  // modelName: MODELS_NAMES_OPENAI.GPT_3_5_TURBO_0613,
-  configuration: {
-    basePath: "https://oai.hconeai.com/v1",
-    baseOptions: {
-      headers: {
-        // Add your Helicone API Key
-        "Helicone-Auth": "Bearer "+getEnvironmentVariable("HELICONE_API_KEY"),
-        "Helicone-Cache-Enabled": "false"
-      }
-    }
-  }
-})
+// const OpenAiModel = new ChatOpenAI({
+//   openAIApiKey: getEnvironmentVariable('OPENAI_API_KEY'),
+//   temperature: 0,
+//   maxTokens: 250,
+//   maxRetries: 2,
+//   maxConcurrency: 5,
+//   // modelName: MODELS_NAMES_OPENAI.GPT_3_5_TURBO_0613,
+//   configuration: {
+//     basePath: "https://oai.hconeai.com/v1",
+//     baseOptions: {
+//       headers: {
+//         // Add your Helicone API Key
+//         "Helicone-Auth": "Bearer "+getEnvironmentVariable("HELICONE_API_KEY"),
+//         "Helicone-Cache-Enabled": "false"
+//       }
+//     }
+//   }
+// })
 
 // console.log(OPENAI_CHAT_MODEL.invoke('como se dice adios en portugues?').then(response => console.log(response)))
-export default CloudflareModel
+export default CohereModel
