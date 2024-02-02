@@ -5,6 +5,9 @@ import { getEnvironmentVariable } from "@langchain/core/utils/env";
 import { QdrantClient } from "@qdrant/js-client-rest";
 import embeddings from "./embedding";
 import { formatDocumentsAsString } from "langchain/util/document";
+import { CohereEmbeddings } from "@langchain/cohere";
+import { CloudflareWorkersAIEmbeddings } from "@langchain/cloudflare";
+import docs from "./data";
 
 /*----------------------------------------------------------------
 
@@ -128,7 +131,7 @@ class QdrantRetriever extends QdrantVectorStore {
     }
 
     async addDocuments(batches: any[], documentOptions: any = {}) {
-        const documents = await this.build_documents(batches)
+        const documents = batches //await this.build_documents(batches)
         const texts = documents.map(doc => doc.pageContent);
         await this.addVectors(await this.embeddings.embedDocuments(texts), documents, documentOptions);
     }
@@ -221,5 +224,8 @@ class QdrantRetriever extends QdrantVectorStore {
 
 }
 
-export const vectorStore = new QdrantRetriever(embeddings, { create: false })
+export const vectorStore = new QdrantRetriever(new CohereEmbeddings({
+    apiKey: 'c208ld0OS1XSmTb2LEpphOUMGas6pLLgtYM2G9pu'
+}), { create: false })
+//vectorStore.addDocuments(docs)
 export const retriever = vectorStore.asRetriever(2)

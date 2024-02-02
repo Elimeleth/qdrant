@@ -91,7 +91,7 @@ class RunnablePassthroughChat {
 
 const main = async () => {
     const runnable = new RunnablePassthroughChat()
-    const content = await runnable.call('En que colores tienes las Adidas?')
+    const content = await runnable.call('construye un flow que responda a hola')
 
     console.log(content)
 }
